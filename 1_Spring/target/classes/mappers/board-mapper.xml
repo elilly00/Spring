@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="boardMapper">
+	<select id="getListCount" resultType="_int"> <!-- select를 하면 resultType/resultMap 둘 중 하나 작성해야함 -->
+		select count(*)
+		from board
+		where board_status = 'Y'
+	</select>
+	
+	<select id="selectList" resultMap="BoardResultSet">
+		select *
+		from Board
+			join member on(board_writer = id)
+		where board_status = 'Y'
+		order by board_id desc
+	</select>
+	<resultMap type="Board" id="BoardResultSet">
+		<id column="BOARD_ID" property="boardId"/>
+		<result column="BOARD_TITLE" property="boardTitle"/>
+		<result column="BOARD_WRITER" property="boardWriter"/>
+		<result column="NICKNAME" property="nickName"/>
+		<result column="BOARD_CONTENT" property="boardContent"/>
+		<result column="ORIGINAL_FILENAME" property="originalFileName"/>
+		<result column="RENAME_FILENAME" property="renameFileName"/>
+		<result column="BOARD_COUNT" property="boardCount"/>
+		<result column="BOARD_CREATE_DATE" property="boardCreateDate"/>
+		<result column="BOARD_MODIFY_DATE" property="boardModifyDate"/>
+		<result column="BOARD_STATUS" property="boardStatus"/>
+	</resultMap>
+	
+	<insert id="insertBoard">
+		insert into board
+		values(seq_bid.nextval, #{boardTitle}, #{boardWriter}, #{boardContent}, #{originalFileName}, 
+			   #{renameFileName}, default, sysdate, sysdate, default)
+	</insert>
+	
+	<update id="addReadCount">
+		update board
+		set board_count = board_count + 1
+		where board_id = #{bId}
+	</update>
+	
+	<select id="selectBoard" resultMap="BoardResultSet">
+		select * 
+		from board
+			 join member on (id = board_writer)
+		where board_id = #{bId} and board_status = 'Y'
+	</select>
+	
+	<update id="updateBoard">
+		update board
+		set board_title = #{boardTitle}, board_content = #{boardContent},
+			<if test="originalFileName != null">
+				original_filename = #{originalFileName},
+			</if>
+			rename_filename = #{renameFileName}, board_modify_date = sysdate
+		where board_id = #{boardId}
+	<!-- 
+		첨부 파일이 있는 게시글 수정 시 첨부파일을 따로 등록하지 않으면 원래 있는 파일까지 삭제되어 수정이 됨
+		if문을 이용해 original_filename이 null이 아니면(파일이 등록되어있으면) 그대로 수정되도록 함
+	-->
+	</update>
+	
+	<update id="deleteBoard">
+		update board
+		set board_status = 'N'
+		where board_id = #{bId}
+	</update>
+	
+	<!-- 댓글 등록 -->
+	<insert id="insertReply">
+		insert into reply
+		values(seq_rid.nextval, #{replyContent}, #{refBoardId}, #{replyWriter}, sysdate, sysdate, default)
+	</insert>
+	
+	<!-- 댓글 리스트 -->
+	<select id="getReplyList" resultMap="replyResultSet"> <!-- member안에 많이 들어가 있기 때문에 select에 컬럼명 다 써주기 -->
+		select reply_id, reply_content, ref_board_id, reply_writer, nickname, 
+			   reply_create_date, reply_modify_date, reply_status 
+		from reply
+			 join member on (reply_writer = id)
+		where ref_board_id = #{bId} <!-- and reply_status = 'Y'  --> <!-- 댓글 삭제 기능이 있다면 추가 -->
+		order by reply_id desc
+	</select>
+	<resultMap type="Reply" id="replyResultSet">
+		<id column="REPLY_ID" property="replyId"/>
+		<result column="REPLY_CONTENT" property="replyContent"/>
+		<result column="REF_BOARD_ID" property="refBoardId"/>
+		<result column="REPLY_WRITER" property="replyWriter"/>
+		<result column="NICKNAME" property="nickName"/>
+		<result column="REPLY_CREATE_DATE" property="replyCreateDate"/>
+		<result column="REPLY_MODIFY_DATE" property="replyModifyDate"/>
+		<result column="REPLY_STATUS" property="replyStatus"/>
+	</resultMap>
+
+	<select id="topList" resultMap="BoardResultSet">
+		<![CDATA[
+		select *
+		from (
+		    select rownum, board_id, board_title, board_writer, nickname, board_content,
+		        original_filename, rename_filename, board_count,
+		        board_create_date, board_modify_date, board_status
+		    from board
+		         join member on(id = board_writer)
+		    order by board_count desc
+		)
+		where board_status = 'Y'
+		     and rownum <= 5
+		]]>     
+		<!-- 
+			[Error]
+			The content of elements must consist of well-formed character data or markup. 
+			: mybatis 특징 중 하나인 쿼리의 태그화 때문에 '<>'를 이용해 쿼리르 작성함
+			  '<>'를 태그의 시작으로 인지하고 있기 때문에 'rownum <= 5' 에서의 '<'도 부등호가 아닌 태그의 시작으로 인지해 에러가 발생함
+			  => '<![CDATA[]]>'안에 쿼리를 작성하면 부등호임을 인지하게 됨 
+			  	 ( ↳ 부등호를 사용하지 않아도 쿼리를 작성할 때 무조건 사용하는 사람도 있음. 사바사임)
+		-->
+	</select>
+	
+	
+	
+</mapper>

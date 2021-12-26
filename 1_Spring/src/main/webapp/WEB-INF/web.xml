@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee https://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+	<!-- 
+		welcome file list가 없어도 index부터 실행됨 
+		(WHY? 프로젝트를 실행하면 해당 Server의 web.xml이 먼저 실행해 그 안의 내용을 실행되고 난 다음 프로젝트의 web.xml이 실행 됨 
+		-> 만약 server의 web.xml과 프로젝트의 web.xml에서 같은 부분에서 다른 내용이 적혀있다면 프로젝트의 내용으로 덮어씌워짐)
+	-->
+	
+	<!-- The definition of the Root Spring Container shared by all Servlets and Filters -->
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+<!-- 		<param-value>/WEB-INF/spring/root-context.xml</param-value> --> <!-- root-context가 spring 폴더에 있을 경우 -->
+		<param-value>
+		classpath:root-context.xml <!-- root-context가 큰 resource 폴더에 있을 경우 / classpath : 큰 resources를 의미 -->
+		/WEB-INF/spring/spring-security.xml <!-- spring-security.xml을 읽어올 수 있도록 등록 -->
+		</param-value> 
+	</context-param>
+	
+	<!-- Creates the Spring Container shared by all Servlets and Filters -->
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+
+	<!-- Processes application requests -->
+	<!--  -->
+	<servlet>
+		<servlet-name>appServlet</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class> <!-- DispatcherServlet 컨트롤러가 리턴한 값을 다시 가져와서 뷰로 전달함 -->
+		<init-param> <!-- DispatcherServlet을 시작하면서  -->
+			<param-name>contextConfigLocation</param-name>
+			<param-value>/WEB-INF/spring/appServlet/servlet-context.xml</param-value> <!-- 뷰로 전달할 때 servlet-context.xml을 참고함 -->
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping> <!-- 어떤 url을 받아 줄 것인지 작성하는 태그 -->
+		<servlet-name>appServlet</servlet-name> 
+		<url-pattern>*.do</url-pattern> <!-- appServlet을 .do가 붙은 것만 처리할 수 있도록 함 --> <!-- 내일은 .me / .bo만 처리할 수 있는 DispatcherServlet를 분리하는 방법에 대해 배울 거임 -->
+	</servlet-mapping>
+
+
+	<!-- 멤버(회원)과 관련된 DespatcherServlet 생성 -->
+	<servlet>
+		<servlet-name>memberServlet</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class> <!-- DespatcherServlet에 대한 경로 작성 -->
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>WEB-INF/spring/appServlet/member-context.xml</param-value>
+		</init-param>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>memberServlet</servlet-name>
+		<url-pattern>*.me</url-pattern>
+	</servlet-mapping>
+	
+	<!-- 공용 에러페이지 등록 -->
+	<error-page>
+		<exception-type>java.lang.Exception</exception-type>
+		<location>/WEB-INF/views/common/errorPage.jsp</location>
+	</error-page>
+	
+	<!-- 한글 인코딩 -->
+	<filter>
+          <filter-name>encoding</filter-name>
+          <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+           <init-param>
+                <param-name>encoding</param-name>
+                <param-value>UTF-8</param-value>
+           </init-param>
+    </filter>
+    <filter-mapping>
+          <filter-name>encoding</filter-name>
+          <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+	<!-- 게시판 관련 -->
+	<servlet>
+		<servlet-name>boardServlet</servlet-name>	
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>WEB-INF/spring/appServlet/board-context.xml</param-value>
+		</init-param>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>boardServlet</servlet-name>
+		<url-pattern>*.bo</url-pattern>
+	</servlet-mapping>
+	
+	
+	
+</web-app>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd" >
+<configuration>
+	<settings>
+		<setting name="jdbcTypeForNull" value="NULL"/>  <!-- 비어있는 값 또는 null을 제대로 인지할 수 있도록 하는 세팅. 대문자 NULL로 작성해야 인지함 -->
+	</settings>
+	
+	<typeAliases> <!-- 별칭 -->
+		<typeAlias type="com.kh.spring.member.model.vo.Member" alias="Member"/>
+		<typeAlias type="com.kh.spring.board.model.vo.Board" alias="Board"/>
+		<typeAlias type="com.kh.spring.board.model.vo.Reply" alias="Reply"/>
+	</typeAliases>
+	<mappers>
+		<mapper resource="mappers/member-mapper.xml"/>
+		<mapper resource="mappers/board-mapper.xml"/>
+	</mappers>
+</configuration>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd">
+
+
+	<mvc:annotation-driven/>
+	<mvc:resources location="/resources/" mapping="/resources/**"/>
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/views/board/"/>
+		<property name="suffix" value=".jsp"></property>
+	</bean>
+	<context:component-scan base-package="com.kh.spring" />
+	
+	<mvc:interceptors>
+		<mvc:interceptor>
+			<mvc:mapping path="/**"/> <!-- 전체 URL이 아닌 home.do에서만 interceptor가 적용되는 이유 : web.xml에서 .do가 붙은 것에만 처리하도록 했기 때문에 -->
+			<bean id="loggerInterceptor" class="com.kh.spring.common.interceptor.TestInterceptor"/>
+		</mvc:interceptor>
+	</mvc:interceptors>
+	
+</beans>

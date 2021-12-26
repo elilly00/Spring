@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="memberMapper"> <!-- mybatis-config.xml에서 mapper를 등록해야 mapper역할을 할 수 있다 -->
+	<select id="memberLogin" resultMap="MemberResultSet"> <!-- parameterType은 안적어 줘도 됨 -> MyBatis에서 전달 받았을 때 무슨 타입인지 자동으로 인지 할 수 있기 때문. ressultType/resultMap은 생략하면 안됨 -->
+		select * 
+		from member
+<!-- 		where id = #{id} and pwd = #{pwd} and member_status = 'Y' -->
+		where id=#{id} and member_status = 'Y' <!-- 비밀번호 암호화를 통해 우선 id만 조회할 수 있도록 함 -->
+	</select>
+	<resultMap type="Member" id="MemberResultSet"> <!-- type -> mybatis-config에 typeAlias지정하기(간편하게 작성하기 위해) -->
+		<id column="ID" property="id"/>
+		<result column="PWD" property="pwd"/>
+		<result column="NAME" property="name"/>
+		<result column="NICKNAME" property="nickName"/>
+		<result column="EMAIL" property="email"/>
+		<result column="GENDER" property="gender"/>
+		<result column="AGE" property="age"/>
+		<result column="PHONE" property="phone"/>
+		<result column="ADDRESS" property="address"/>
+		<result column="ENROLL_DATE" property="enrollDate"/>
+		<result column="UPDATE_DATE" property="updateDate"/>
+		<result column="MEMBER_STATUS" property="memberStatus"/>
+	</resultMap>
+	
+	<insert id="insertMember">
+		insert into member 
+		values(#{id}, #{pwd}, #{name}, #{nickName}, #{email}, #{gender}, 
+			   #{age}, #{phone}, #{address}, sysdate, sysdate, default)
+	</insert>
+	
+	<update id="updateMember">
+		update member
+		set name = #{name}, nickname = #{nickName}, age = #{age}, email = #{email},
+			phone = #{phone}, gender = #{gender}, address = #{address}, update_date = sysdate
+		where id = #{id}
+	</update>
+	
+	<update id="updatePassword">
+		update member
+		set pwd = #{newPwd}
+		where id = #{id}
+	</update>
+	
+	<select id="duplicateId" resultType="_int">
+		select count(*)
+		from member
+		where id = #{id}
+	</select>
+	
+	
+	
+</mapper>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd">
+	
+	<!-- DataSource 등록 -->
+	<!-- Bean 소스(source)를 통해 BasicDataSource라는 객체를 만들고  --> 
+	<!-- destroy-method : 메소드를 작성하고 나서 닫아주는 용도로 무엇을 사용할 것인지 작성 -->
+	<bean class="org.apache.commons.dbcp.BasicDataSource" id="dataSource" destroy-method="close">
+		<property name="driverClassName" value="oracle.jdbc.driver.OracleDriver"/>
+		<property name="url" value="jdbc:oracle:thin:@Localhost:1521:xe"/>
+		<property name="username" value="SPRING"/>
+		<property name="password" value="SPRING"/>
+	</bean>
+	<!-- class에서 빨간줄이 뜨는 이유 : BasicDataSource가 포함되어 있는 라이브러리가 존재하지 않아 찾아올 수 없기 때문에 빨간줄이 뜨게 됨 -> 해당 라이브러리 집어넣어야함(Maven->pom.xml에서 작성) -->
+
+	<!-- SqlSession 등록 -->
+	<bean id="sqlSession" class="org.mybatis.spring.SqlSessionFactoryBean"> <!-- 라이브러리 필요 -->
+		<property name="configLocation" value="classpath:mybatis-config.xml"/> <!-- classpath : 큰 resources부분을 뜻 함 -->
+		<property name="dataSource" ref="dataSource"/> <!-- ref : 레퍼런스(dataSource를 참조하고있다는 의미, DataSource등록 부분의 id를 보고 참조 할 수 있는 것임)-->
+	</bean>
+	<bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate"> <!-- FactoryBean이 아닌 Template을 실제로 사용함 -->
+		<constructor-arg ref="sqlSession"/> <!-- constructor-arg : 생성자를 이용하는 것 -->
+	</bean>
+	
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager"> <!-- 라이브러리 필요 -->
+		<property name="dataSource" ref="dataSource"/>
+	</bean>
+	
+	<!-- 파일 업로드시 사용할 MultipartResolver -->
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="maxUploadSize" value="1000000000"/>
+		<property name="maxInMemorySize" value="1000000000"/>
+	</bean>
+</beans>

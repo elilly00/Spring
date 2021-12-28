@@ -207,9 +207,12 @@
 		    <version>2.8.5</version>
 		</dependency>
 		
-		
-		
-		
+		<!-- aop처리를 위한 aspectjweaving추가 -->
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjweaver</artifactId>
+			<version>${org.aspectj-version}</version>
+		</dependency>
 		
 		
 		        

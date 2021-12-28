@@ -14,6 +14,16 @@
 <body>
 	<c:import url="common/menubar.jsp"/>
 	
+	<script>
+	$(function() {
+		var msg = '${msg}';
+		
+		if(msg != ''){
+			alert(msg);
+		}
+	});
+	</script>
+	
 	<h1 align="center">게시글 TOP5 목록</h1>
 	<table id="tb" border="1">
 		<thead>

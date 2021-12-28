@@ -34,11 +34,21 @@
 		 -> 내가 사용할 부분만 작성해도 되지만 지금은 어디를 사용할지 모르기때문에 범위를 가장 넓게 작성했음 
 	-->
 	
+	<!-- Test인터셉터 등록 -->
 	<mvc:interceptors>
 		<mvc:interceptor>
 			<mvc:mapping path="/**"/> 
 			<bean id="loggerInterceptor" class="com.kh.spring.common.interceptor.TestInterceptor"/>
 		</mvc:interceptor>
 	</mvc:interceptors>
+	
+	<!-- 로그인 인터셉터 등록 -->
+	<mvc:interceptors>
+		<mvc:interceptor>
+			<mvc:mapping path="/Login.me"/> 
+			<bean id="loginInterceptor" class="com.kh.spring.common.interceptor.LoginInterceptor"/>
+		</mvc:interceptor>
+	</mvc:interceptors>
+	
 	
 </beans>

@@ -49,11 +49,11 @@
 	</appender>
 	
 	<appender name="myDailyRollingFile" class="org.apache.log4j.DailyRollingFileAppender">
-		<param name="File" value="/logs/member/login.log" />
-		<param name="Append" value="true" /> <!-- 파일을 이어쓰겠다는 의미 -->
-		<param name="encoding" value="UTF-8" />
-		<param name="DatePattern" value="'.'yyyyMMdd" /><!-- 다음날 만들어질  파일 명-->
-		<layout name="org.apache.log4j.PatternLayout">
+		<param name="File" value="/logs/member/login.log"/>
+		<param name="Append" value="true"/> <!-- 해당 파일에 이어쓰겠다는 의미 -->
+		<param name="encoding" value="UTF-8"/>
+		<param name="DatePattern" value="'.'yyyyMMdd"/><!-- 매일 새로운 파일이 만들어지고 전날 파일은 백업 파일이 되므로 백업 파일을 만드는 경우 추가할 날짜 정보 -->
+		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="%d{yy-MM-dd HH:mm:ss} [%p] %c{1}.%M{%L} - %m%n" />
 		</layout>
 	</appender>
@@ -110,13 +110,24 @@
 	<logger name="com.kh.spring.member.controller.MemberController" additivity="false">
 		<level value="debug" />
 		<appender-ref ref="console2" />
-		<appender-ref ref="myDailyRollingFile" />
+<!-- 		<appender-ref ref="myDailyRollingFile" /> --> <!-- 인터셉터를 이용해 분리시켜주기 어느 것을 분리해도 상관 없음 -->
 	</logger>
 	
 	<logger name="com.kh.spring.common.interceptor.TestInterceptor" additivity="false">
 		<level value="debug" />
 		<appender-ref ref="console2" />
 	</logger>
+	
+	<logger name="com.kh.spring.common.interceptor.LoginInterceptor">
+		<level value="info"/>
+		<appender-ref ref="myDailyRollingFile"/>
+	</logger>
+	
+	<logger name="com.kh.spring.common.aop" additivitt="false">
+		<level value="debug"/>
+		<appender-ref ref="console2" /> <!-- 없어도 됨 -->
+	</logger>
+	
 	<!-- Root Logger -->
 	<!-- 
 		모든 자식 logger들이 출력이 root Logger를 통해 이루어짐 (모든 로거에 대한 부모 )

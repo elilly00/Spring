@@ -53,6 +53,10 @@ public class MemberServiceimpl implements MemberService {
 		return mDAO.duplicateId(sqlSession, id);
 	}
 
+	@Override
+	public int deleteMember(String id) {
+		return mDAO.deleteMember(sqlSession, id);
+	}
 
 	
 	

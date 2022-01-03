@@ -360,4 +360,17 @@ public class MemberController {
 		}
 	}
 	
+	// 회원 탈퇴
+		@RequestMapping("mdelete.me")
+		public String deleteMember(@RequestParam("id") String id, SessionStatus session) {
+			int result = mService.deleteMember(id);
+			
+			if(result > 0) {
+				session.setComplete();
+				return "redirect:home.do";
+			} else {
+				throw new MemberException("회원 삭제에 실패하였습니다.");
+			}
+		}
+	
 }

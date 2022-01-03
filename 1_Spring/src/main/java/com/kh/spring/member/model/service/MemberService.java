@@ -16,6 +16,8 @@ public interface MemberService { // 추상 메소드 추가
 
 	int duplicateId(String id);
 
+	int deleteMember(String id);
+
 
 	
 	

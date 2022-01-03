@@ -31,6 +31,9 @@ public class MemberDAO {
 		return sqlSession.selectOne("memberMapper.duplicateId", id);
 	}
 
+	public int deleteMember(SqlSessionTemplate sqlSession, String id) {
+		return sqlSession.update("memberMapper.deleteMember", id);
+	}
 
 	
 }

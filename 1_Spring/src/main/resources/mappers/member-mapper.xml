@@ -47,6 +47,10 @@
 		where id = #{id}
 	</select>
 	
-	
+	<update id="deleteMember">
+		update member
+		set member_status = 'N'
+		where id=#{id}
+	</update>
 	
 </mapper>
